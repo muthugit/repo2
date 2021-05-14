@@ -1,0 +1,32 @@
+on: push
+
+jobs:
+    replicate-file:
+        runs-on: ubuntu-latest
+        name: Replicate File
+
+        steps:
+        - name: Checkout Project A
+          uses: actions/checkout@v2
+          with:
+            path: ./repo2
+
+        - name: Checkout MonoRepo
+          uses: actions/checkout@master
+          with: 
+            repository: muthugit/mono_repo
+            token: ${{ secrets.PAT_TOKEN }}
+            path: ./mono_repo
+       
+
+        - name: Copy/Create file
+          run: |
+            cp ./repo2/README.md ./mono_repo/repo2.md
+        - name: Push Project B
+          run: |
+            cd ./mono_repo
+            git add .
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git commit -am "File Replicated from Project A"
+            git push
